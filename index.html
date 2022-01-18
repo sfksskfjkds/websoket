@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>websoket</title>
+    <style>
+        body {
+            margin: 0;
+        }
+        .content {
+            position: relative;
+            left: 0;
+            bottom: 35px;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .wrapper {
+            width: 100%;
+        }
+        .wrapper-send {
+            width: 90%;
+            align-self: flex-end;
+            display: flex;
+            justify-content: flex-end;
+        }
+        .wrapper-recive {
+            width: 90%;
+        }
+        .recive {
+            background: gray;
+            opacity: 0.7;
+            padding: 3px;
+            border-radius: 5px;
+            margin-left: 5px;
+            margin-top: 5px;
+            word-break: break-all;
+            display: inline-block;
+        }
+        .send {
+            background-color: green;
+            opacity: 0.7;
+            padding: 3px;
+            border-radius: 5px;
+            margin-left: 5px;
+            margin-top: 5px;
+            margin-right: 5px;
+            word-break: break-all;
+            display: inline-block;
+        }
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 35px;
+            width: 100%;
+            display: flex;
+        }
+        .btn {
+            width: 4rem;
+        }
+        .btn-add {
+            width: 2.5rem;
+            border-radius: 50%;
+            font-size: 30px;
+        }
+        .inp {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <dov id="app">
+        <div class="content"></div>
+        <div class="footer">
+            <input type="text" class="inp"><button class="btn btn-send">发送</button>
+        </div>
+    </dov>
+    <script>
+        let ws = new WebSocket('ws://localhost:3000')
+
+        ws.onopen = () => {
+            console.log(`[CLIENT] open()`);
+            ws.send('Hello!');
+        }
+
+        ws.onmessage = res => {
+            let dom = document.createElement('div')
+            dom.setAttribute('class','recive')
+            let text = document.createTextNode(`接收到服务器消息：${res.data}`)
+            dom.appendChild(text)
+
+            let wrapper = document.createElement('div')
+            wrapper.setAttribute('class','wrapper wrapper-recive')
+            wrapper.appendChild(dom)
+            document.querySelector('.content').appendChild(wrapper)
+        }
+        document.querySelector('.btn').addEventListener('click', () => {
+            let val = document.querySelector('.inp').value;
+            let dom = document.createElement('div')
+            dom.setAttribute('class','send')
+            let text = document.createTextNode(`${val}`)
+            dom.appendChild(text)
+
+            let wrapper = document.createElement('div')
+            wrapper.setAttribute('class','wrapper wrapper-send')
+            wrapper.appendChild(dom)
+            document.querySelector('.content').appendChild(wrapper)
+            ws.send(val)
+            document.querySelector('.inp').value = ''
+        })
+    </script>
+</body>
+</html>
